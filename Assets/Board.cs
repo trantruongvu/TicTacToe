@@ -20,30 +20,34 @@ public class Board : MonoBehaviour
     // Create table 
     public void BuildTable()
     {
-        // Clean old table
-        foreach (Transform oldblock in transform)
+        // if already has table
+        if (transform.childCount > 0)
         {
-            Destroy(oldblock.gameObject);
+            // Clean old table
+            foreach (Block block in blocks)
+                block.Reset();
+
         }
+        else
+        {
+            // Get size per block
+            int blockSize = 1080 / ttt.blocksToBuild;
+            for (int y = 0; y < ttt.blocksToBuild; y++)
+            {
+                for (int x = 0; x < ttt.blocksToBuild; x++)
+                {
+                    Block block = Instantiate(prefabBlock, transform);
+                    block.image.rectTransform.sizeDelta = new Vector2(blockSize, blockSize);
+                    block.image.rectTransform.anchoredPosition = new Vector2(blockSize * x, -blockSize * y);
+                    blocks.Add(block);
+                }
+            }
+        }
+
         ttt.turnCount = 0;
         ttt.isPlayer1Turn = true;
         ttt.currentPlayerCharacter = "x";
-
-        blocks.Clear();
         ttt.txtResult.transform.parent.gameObject.SetActive(false);
-
-        // Get size per block
-        int blockSize = 1080 / ttt.blocksToBuild;
-        for (int y = 0; y < ttt.blocksToBuild; y++)
-        {
-            for (int x = 0; x < ttt.blocksToBuild; x++)
-            {
-                Block block = Instantiate(prefabBlock, transform);
-                block.image.rectTransform.sizeDelta = new Vector2(blockSize, blockSize);
-                block.image.rectTransform.anchoredPosition = new Vector2(blockSize * x, -blockSize * y);
-                blocks.Add(block);
-            }
-        }
     }
 
     // Check and return game result
@@ -53,6 +57,38 @@ public class Board : MonoBehaviour
 
     public bool CheckForWinner()
     {
+        // Horizontal
+        for (int i = 0; i <= 6; i += 3)
+        {
+            if (!CompareBlocks(i, i + 1)) // [0] [1]
+                continue;
+            if (!CompareBlocks(i, i + 2)) // [0] [2]
+                continue;
+
+            return true;
+        }
+
+        // Vertical
+        for (int i = 0; i < 3; i++)
+        {
+            if (!CompareBlocks(i, i + 3)) // [0] [3]
+                continue;
+            if (!CompareBlocks(i, i + 6)) // [0] [6]
+                continue;
+
+            return true;
+        }
+
+        // Left Diagonal [0] [4] n [0] [8]
+        if (CompareBlocks(0, 4) && CompareBlocks(0, 8))
+            return true;
+
+        // Right Diagonal [2] [4] && [2] [6]
+        if (CompareBlocks(2, 4) && CompareBlocks(2, 6))
+            return true;
+
+        return false;
+
         #region Test
         /*
         #region Check Horizontal 
@@ -148,38 +184,6 @@ public class Board : MonoBehaviour
         #endregion Vertical
         */
         #endregion Test
-
-        // Horizontal
-        for (int i = 0; i <= 6; i += 3)
-        {
-            if (!CompareBlocks(i, i + 1))
-                continue;
-            if (!CompareBlocks(i, i + 2))
-                continue;
-
-            return true;
-        }
-
-        // Vertical
-        for (int i = 0; i < 3; i++)
-        {
-            if (!CompareBlocks(i, i + 3))
-                continue;
-            if (!CompareBlocks(i, i + 6))
-                continue;
-
-            return true;
-        }
-
-        // Left Diagonal
-        if (CompareBlocks(0, 4) && CompareBlocks(0, 8))
-            return true;
-
-        // Right Diagonal
-        if (CompareBlocks(2, 4) && CompareBlocks(2, 6))
-            return true;
-
-        return false;
     }
 
     // Compare two values of blocks

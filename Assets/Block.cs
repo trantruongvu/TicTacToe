@@ -20,4 +20,9 @@ public class Block : MonoBehaviour
         // End one turn -> Next
         TicTacToe.Instance.NextTurn();
     }
+    public void Reset()
+    {
+        button.interactable = true;
+        text.text = "";
+    }
 }

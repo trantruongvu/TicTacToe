@@ -36,6 +36,7 @@ public class TicTacToe : MonoBehaviour
                 EndGame(0); // Debug.Log("Player 1 won");
             else
                 EndGame(1); // Debug.Log("Player 2 won");
+            return;
         }
 
         if (turnCount >= blocksToBuild * blocksToBuild)
